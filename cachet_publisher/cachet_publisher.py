@@ -63,9 +63,8 @@ class CachetHandler(SensuHandler):
 
     def handle(self):
         self.client = Client(self.options.url, self.options.token)
-        event_data = json.loads(sys.stdin.read())
 
-        check_status = event_data["check"]["status"]
+        check_status = self.event["check"]["status"]
 
         if check_status == 1:  # WARNING
             self.__update_status(self.options.id, self.options.warning_code)
