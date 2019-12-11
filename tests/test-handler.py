@@ -7,114 +7,174 @@ from unittest.mock import patch
 # Alter path and import modules
 from cachet_publisher.cachet_publisher import CachetHandler
 
-ERROR_RESULT = '''
+OK_RESULT = '''
 {
-  "id": "ef6b87d2-1f89-439f-8bea-33881436ab90",
-  "action": "create",
-  "timestamp": 1460172826,
-  "occurrences": 2,
-  "check": {
-    "type": "standard",
-    "total_state_change": 11,
-    "history": ["0", "0", "1", "1", "2", "2"],
-    "status": 2,
-    "output": "No keepalive sent from client for 230 seconds (>=180)",
-    "executed": 1460172826,
-    "issued": 1460172826,
-    "name": "keepalive",
-    "thresholds": {
-      "critical": 180,
-      "warning": 120
-    }
-  },
-  "client": {
-    "timestamp": 1460172596,
-    "version": "1.1.0",
-    "socket": {
-      "port": 3030,
-      "bind": "127.0.0.1"
-    },
-    "subscriptions": [
-      "production"
-    ],
-    "environment": "development",
-    "address": "127.0.0.1",
-    "name": "client-01"
-  }
+   "timestamp":1575996938,
+   "entity":{
+      "entity_class":"proxy",
+      "system":{
+         "network":{
+            "interfaces":null
+         }
+      },
+      "metadata":{
+         "name":"test",
+         "namespace":"default"
+      },
+      "sensu_agent_version":""
+   },
+   "check":{
+      "command":"/usr/lib/nagios/plugins/check_http -w 3 -c 10 --ssl -H google.ch",
+      "timeout":0,
+      "round_robin":false,
+      "duration":0.057158899,
+      "executed":1575996938,
+      "history":[
+         {
+            "status":0,
+            "executed":1575996818
+         },
+         {
+            "status":0,
+            "executed":1575996878
+         },
+         {
+            "status":0,
+            "executed":1575996938
+         }
+      ],
+      "issued":1575996938,
+      "output":"HTTP OK: HTTP/1.1 200 OK - 305 bytes in 0.055 second response time |time=0.054662s;3.000000;10.000000;0.000000 size=305B;;;0n",
+      "state":"passing",
+      "status":0,
+      "total_state_change":0,
+      "last_ok":1575996938,
+      "occurrences":26,
+      "occurrences_watermark":51,
+      "output_metric_format":"",
+      "output_metric_handlers":null,
+      "metadata":{
+         "name":"test-check",
+         "namespace":"default"
+      }
+   },
+   "metadata":{
+      "namespace":"default"
+   }
 }
 '''
 
 WARNING_RESULT = '''
 {
-  "id": "ef6b87d2-1f89-439f-8bea-33881436ab90",
-  "action": "create",
-  "timestamp": 1460172826,
-  "occurrences": 1,
-  "check": {
-    "type": "standard",
-    "total_state_change": 11,
-    "history": ["0", "0", "0", "0", "0", "0"],
-    "status": 1,
-    "output": "No keepalive sent from client for 130 seconds (>=120)",
-    "executed": 1460172826,
-    "issued": 1460172826,
-    "name": "keepalive",
-    "thresholds": {
-      "critical": 180,
-      "warning": 120
-    }
-  },
-  "client": {
-    "timestamp": 1460172596,
-    "version": "1.1.0",
-    "socket": {
-      "port": 3030,
-      "bind": "127.0.0.1"
-    },
-    "subscriptions": [
-      "production"
-    ],
-    "environment": "development",
-    "address": "127.0.0.1",
-    "name": "client-01"
-  }
+   "timestamp":1575996938,
+   "entity":{
+      "entity_class":"proxy",
+      "system":{
+         "network":{
+            "interfaces":null
+         }
+      },
+      "metadata":{
+         "name":"test",
+         "namespace":"default"
+      },
+      "sensu_agent_version":""
+   },
+   "check":{
+      "command":"/usr/lib/nagios/plugins/check_http -w 3 -c 10 --ssl -H google.ch",
+      "timeout":0,
+      "round_robin":false,
+      "duration":0.057158899,
+      "executed":1575996938,
+      "history":[
+         {
+            "status":0,
+            "executed":1575996818
+         },
+         {
+            "status":0,
+            "executed":1575996878
+         },
+         {
+            "status":0,
+            "executed":1575996938
+         }
+      ],
+      "issued":1575996938,
+      "output":"HTTP OK: HTTP/1.1 200 OK - 305 bytes in 3.2 second response time |time=0.054662s;3.000000;10.000000;0.000000 size=305B;;;0n",
+      "state":"passing",
+      "status":1,
+      "total_state_change":0,
+      "last_ok":1575996938,
+      "occurrences":26,
+      "occurrences_watermark":51,
+      "output_metric_format":"",
+      "output_metric_handlers":null,
+      "metadata":{
+         "name":"test-check",
+         "namespace":"default"
+      }
+   },
+   "metadata":{
+      "namespace":"default"
+   }
 }
 '''
 
-OK_RESULT = '''
+ERROR_RESULT = '''
 {
-  "id": "ef6b87d2-1f89-439f-8bea-33881436ab90",
-  "action": "create",
-  "timestamp": 1460172826,
-  "occurrences": 1,
-  "check": {
-    "type": "standard",
-    "total_state_change": 11,
-    "history": ["0", "0", "1", "1", "2", "2"],
-    "status": 0,
-    "output": "No keepalive sent from client for 130 seconds (>=120)",
-    "executed": 1460172826,
-    "issued": 1460172826,
-    "name": "keepalive",
-    "thresholds": {
-      "critical": 180,
-      "warning": 120
-    }
-  },
-  "client": {
-    "timestamp": 1460172596,
-    "version": "1.1.0",
-    "socket": {
-      "port": 3030,
-      "bind": "127.0.0.1"
-    },
-    "subscriptions": [
-      "production"
-    ],
-    "environment": "development",
-    "address": "127.0.0.1",
-    "name": "client-01"
-  }
+   "timestamp":1575996938,
+   "entity":{
+      "entity_class":"proxy",
+      "system":{
+         "network":{
+            "interfaces":null
+         }
+      },
+      "metadata":{
+         "name":"test",
+         "namespace":"default"
+      },
+      "sensu_agent_version":""
+   },
+   "check":{
+      "command":"/usr/lib/nagios/plugins/check_http -w 3 -c 10 --ssl -H google.ch",
+      "timeout":0,
+      "round_robin":false,
+      "duration":0.057158899,
+      "executed":1575996938,
+      "history":[
+         {
+            "status":0,
+            "executed":1575996818
+         },
+         {
+            "status":0,
+            "executed":1575996878
+         },
+         {
+            "status":0,
+            "executed":1575996938
+         }
+      ],
+      "issued":1575996938,
+      "output":"HTTP OK: HTTP/1.1 200 OK - 305 bytes in 10.2 second response time |time=0.054662s;3.000000;10.000000;0.000000 size=305B;;;0n",
+      "state":"passing",
+      "status":2,
+      "total_state_change":0,
+      "last_ok":1575996938,
+      "occurrences":26,
+      "occurrences_watermark":51,
+      "output_metric_format":"",
+      "output_metric_handlers":null,
+      "metadata":{
+         "name":"test-check",
+         "namespace":"default"
+      }
+   },
+   "metadata":{
+      "namespace":"default"
+   }
 }
 '''
 

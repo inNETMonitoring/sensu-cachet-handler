@@ -1,7 +1,6 @@
 from sensu_plugin import SensuHandler
 from cachetclient import Client
 import json
-import sys
 
 
 class CachetHandler(SensuHandler):
@@ -52,7 +51,7 @@ class CachetHandler(SensuHandler):
     def __get_incident_name(self):
         title = self.options.incident_title
         if title is None:
-            title = f"Troubles with {self.event['check']['name']}"
+            title = f"Troubles with {self.event['check']['metadata']['name']}"
         return title
 
     def __get_incident_message(self):
