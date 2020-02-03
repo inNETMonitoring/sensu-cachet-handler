@@ -2,6 +2,21 @@
 
 A python based handler to send status updates to cachet using sensu checks.
 
+## Installation
+
+__This script is still under development and not considered stable!__
+
+
+This script requires cachet-client and sensu-plugin as well as a python installation on your
+sensu master. An example dockerfile is visible below:
+
+```text
+FROM sensu/sensu:5.15.0
+
+RUN apk update && apk add python3 git
+RUN pip3 install cachet-client==2.0.1 sensu-plugin==0.8.0 git+https://github.com/inNETMonitoring/sensu-cachet-handler.git
+```
+
 ## Usage
 
 ```text
