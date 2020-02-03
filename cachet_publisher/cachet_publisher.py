@@ -44,6 +44,10 @@ class CachetHandler(SensuHandler):
         else:
             return None
 
+    def __get_current_state(self, component_id):
+        component_status = self.client.components.get(component_id)
+        return component_status.status
+
     def __resolve_incident(self, incident, state, resolve_message):
         self.client.incidents.update(incident_id=incident.id, status=state, name=incident.name,
                                      message=resolve_message + "\n\n---\n\n" + incident.message, visible=1)
@@ -63,18 +67,19 @@ class CachetHandler(SensuHandler):
     def handle(self):
         self.client = Client(self.options.url, self.options.token)
 
+        current_status = self.__get_current_state(self.options.id)
         check_status = self.event["check"]["status"]
 
-        if check_status == 1:  # WARNING
+        if check_status == 1 and current_status != self.options.warning_code:  # WARNING
             self.__update_status(self.options.id, self.options.warning_code)
-        elif check_status == 2:  # ERROR
+        elif check_status == 2 and current_status != self.options.error_code:  # ERROR
             issue = self.__has_active_issue(self.options.id, self.__get_incident_name())
             if self.options.create_incident and issue is None:
                 self.__create_incident(self.options.id, self.__get_incident_name(), self.__get_incident_message(),
                                        self.options.error_code)
             else:
                 self.__update_status(self.options.id, self.options.error_code)
-        else:
+        elif check_status == 0 and current_status != 1:  # OK
             issue = self.__has_active_issue(self.options.id, self.__get_incident_name())
 
             if issue is not None:

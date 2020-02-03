@@ -215,7 +215,8 @@ class TestCachetPublisher(unittest.TestCase):
                 patch.object(sys, "argv", ["cachet_publisher.py", "-u", "https://my.status.io/v1",
                                             "-t", "api-key", "-i", "10"]), \
                 patch.object(self.cachet_handler, "_CachetHandler__update_status", return_value=None) as updater, \
-                patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None):
+                patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None), \
+                patch.object(self.cachet_handler, "_CachetHandler__get_current_state", return_value=1):
 
             mocked_stdin.read = lambda: ERROR_RESULT
             self.cachet_handler.run()
@@ -231,7 +232,8 @@ class TestCachetPublisher(unittest.TestCase):
                 patch.object(sys, "argv", ["cachet_publisher.py", "-u", "https://my.status.io/v1",
                                             "-t", "api-key", "-i", "11"]), \
                 patch.object(self.cachet_handler, "_CachetHandler__update_status", return_value=None) as updater, \
-                patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None):
+                patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None), \
+                patch.object(self.cachet_handler, "_CachetHandler__get_current_state", return_value=1):
 
             mocked_stdin.read = lambda: WARNING_RESULT
             self.cachet_handler.run()
@@ -249,24 +251,27 @@ class TestCachetPublisher(unittest.TestCase):
                 patch.object(self.cachet_handler, "_CachetHandler__update_status", return_value=None) as updater, \
                 patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None):
 
-            mocked_stdin.read = lambda: WARNING_RESULT
-            self.cachet_handler.run()
-            assert updater.call_args == ((10, 3), )
+            # Return 0 for current state in both cases. This makes it easier to test custom error and warning codes
+            with patch.object(self.cachet_handler, "_CachetHandler__get_current_state", return_value=1):
+                mocked_stdin.read = lambda: WARNING_RESULT
+                self.cachet_handler.run()
+                assert updater.call_args == ((10, 3), )
 
-            mocked_stdin.read = lambda: ERROR_RESULT
-            self.cachet_handler.run()
-            assert updater.call_args == ((10, 3), )
+                mocked_stdin.read = lambda: ERROR_RESULT
+                self.cachet_handler.run()
+                assert updater.call_args == ((10, 3), )
 
     def test_create_issue(self):
         with patch('sensu_plugin.handler.sys.stdin') as mocked_stdin, \
-                patch.object(sys, "argv", ["cachet_publisher.py", "-u", "https://status.innet.io/api/v1",
-                                           "-t", "1BlxhjbyeD9sOdIBBO57", "-i", "10", "--create-incident",
+                patch.object(sys, "argv", ["cachet_publisher.py", "-u", "https://my.status.io/v1",
+                                           "-t", "api-key", "-i", "10", "--create-incident",
                                            "--incident-message", "test", "--incident-title", "test"]), \
                 patch.object(self.cachet_handler, "_CachetHandler__update_status", return_value=None):
 
             with patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None), \
                     patch.object(self.cachet_handler, "_CachetHandler__create_incident", return_value=None) \
-                    as incident_hdl:
+                    as incident_hdl, \
+                    patch.object(self.cachet_handler, "_CachetHandler__get_current_state", return_value=1):
 
                 mocked_stdin.read = lambda: ERROR_RESULT
                 self.cachet_handler.run()
@@ -276,8 +281,22 @@ class TestCachetPublisher(unittest.TestCase):
             with patch.object(self.cachet_handler, "_CachetHandler__has_active_issue",
                               return_value=incident), \
                     patch.object(self.cachet_handler, "_CachetHandler__resolve_incident", return_value=None) \
-                    as incident_hdl:
+                    as incident_hdl, \
+                    patch.object(self.cachet_handler, "_CachetHandler__get_current_state", return_value=4):
 
                 mocked_stdin.read = lambda: OK_RESULT
                 self.cachet_handler.run()
                 assert incident_hdl.call_args == ((incident, 4, "Incident was resolved"), )
+
+    def test_no_issue_rewrite(self):
+        with patch('sensu_plugin.handler.sys.stdin') as mocked_stdin, \
+                patch.object(sys, "argv", ["cachet_publisher.py", "-u", "https://my.status.io/v1",
+                                           "-t", "api-key", "-i", "10"]), \
+                patch.object(self.cachet_handler, "_CachetHandler__update_status", return_value=None) as updater, \
+                patch.object(self.cachet_handler, "_CachetHandler__has_active_issue", return_value=None), \
+                patch.object(self.cachet_handler, "_CachetHandler__get_current_state", return_value=1):
+
+            mocked_stdin.read = lambda: OK_RESULT
+            self.cachet_handler.run()
+
+            assert updater.call_count == 0
