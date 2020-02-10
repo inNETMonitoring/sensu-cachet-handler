@@ -50,3 +50,17 @@ optional arguments:
   --resolve-message RESOLVE_MESSAGE
                         Message which will be sent if the issue gets resolved
 ```
+
+```text
+usage: cachet_metrics.py [-h] [--map-v2-event-into-v1] --id ID --url URL
+                         --token TOKEN --name NAME
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --map-v2-event-into-v1
+  --id ID, -i ID        Id of the cachet component to update
+  --url URL, -u URL     Cachet API endpoint
+  --token TOKEN, -t TOKEN
+                        The access token for the cachet API
+  --name NAME, -n NAME  The name of the measurement to be published to cachet
+```

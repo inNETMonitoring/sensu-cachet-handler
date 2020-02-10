@@ -1,0 +1,73 @@
+{
+  "timestamp": 1581339925,
+  "entity": {
+    "entity_class": "proxy",
+    "system":{
+      "network": {"interfaces": null}
+    },
+    "last_seen": 0,
+    "deregister": false,
+    "deregistration": {},
+    "metadata": {"name": "hailsense.io", "namespace": "default"},
+    "sensu_agent_version": ""
+  },
+  "check": {
+    "command": "metrics-disk-usage.rb -I \"/data\",--scheme \"data.disk_usage\"",
+    "handlers": [],
+    "high_flap_threshold": 0,
+    "interval": 600,
+    "low_flap_threshold": 0,
+    "publish": true,
+    "runtime_assets": ["sensu-plugins-disk-checks", "sensu-ruby-runtime"],
+    "subscriptions": ["my-subscription"],
+    "proxy_entity_name": "my-proxy",
+    "check_hooks": null,
+    "stdin": false,
+    "subdue": null,
+    "ttl": 0,
+    "timeout": 0,
+    "round_robin": false,
+    "duration": 0.090880123,
+    "executed": 1581339925,
+    "history": [],
+    "issued": 1581339925,
+    "output": "not-required",
+    "state": "passing",
+    "status": 0,
+    "total_state_change": 0,
+    "last_ok": 1581339925,
+    "occurrences": 4030,
+    "occurrences_watermark": 4030,
+    "output_metric_format": "graphite_plaintext",
+    "output_metric_handlers": ["my-handler"],
+    "env_vars":null,
+    "metadata": {
+    "name": "storage-check",
+    "namespace": "default"
+  },
+  "secrets": null
+  },
+  "metrics": {
+    "handlers": ["influx-handler-innet-generic", "debug-handler"],
+    "points": [
+      {
+        "name": "data.disk_usage.root.data.used",
+        "value": 178,
+        "timestamp": 1581339925,
+        "tags": null
+      },
+      {
+        "name": "data.disk_usage.root.data.avail",
+        "value": 782,
+        "timestamp": 1581339925,
+        "tags": null
+      },
+      {
+        "name": "data.disk_usage.root.data.used_percentage",
+        "value": 19,
+        "timestamp": 1581339925,
+        "tags": null}
+    ]
+  },
+  "metadata": {"namespace": "default"}
+}
