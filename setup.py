@@ -23,6 +23,7 @@ setup(name="sensu-cachet-handler",
       zip_safe=False,
       entry_points={
           "console_scripts": [
-              "cachet_publisher=cachet_publisher.__main__:main"
+              "cachet_publisher=cachet_publisher.__main__:main",
+              "cachet_metric=cachet_metric.__main__:main"
           ]}
       )

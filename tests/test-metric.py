@@ -5,7 +5,7 @@ import sys
 from unittest.mock import patch
 
 # Alter path and import modules
-from cachet_publisher.cachet_metrics import CachetMetrics
+from cachet_metric.cachet_metrics import CachetMetrics
 
 
 METRIC_JSON = '''{
